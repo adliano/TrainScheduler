@@ -65,7 +65,6 @@ function onFrequencySet() {
     trainInfo.fequency = parseInt(inputElements.fequency.value);
 }
 
-
 /*****************************************************/
 /******************* Timepicker **********************/
 /*****************************************************/
