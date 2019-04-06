@@ -1,0 +1,19 @@
+/* font-family: 'Anton',sans-serif; */
+/* font-family: 'Patua One',cursive; */
+/* font-family: 'Russo One',sans-serif; */
+
+.card-header h3 {
+    font-family: 'Patua One',cursive;
+}
+
+.myBorder{
+    border: 2px solid #007bff;
+}
+
+.display-3 {
+    font-family: 'Anton',sans-serif;
+}
+
+.lead{
+    font-family: 'Patua One',cursive;
+}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Train Scheduler</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Application CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Anton|Patua+One|Russo+One" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <!-- ----------------------------------------- -->
+        <!-- --------------- Jumbotron --------------- -->
+        <!-- ----------------------------------------- -->
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container text-center">
+                <h1 class="display-3">Train Scheduler</h1>
+                <p class="lead">A Better way to don't miss the train</p>
+            </div>
+        </div>
+        <!-- ----------------------------------------- -->
+        <!-- ------------ Train Schedules ------------ -->
+        <!-- ----------------------------------------- -->
+        <!-- <div class="container bg-light rounded myBorder p-0"> -->
+        <div class="row mt-2">
+            <div class="col-lg-12">
+                <div class="card border ronded border-primary">
+                    <div class="card-header text-light bg-primary">
+                        <h3>Current Train Schedule</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h5>Train Name</h5>
+                            </div>
+                            <div class="col">
+                                <h5>Destination</h5>
+                            </div>
+                            <div class="col">
+                                <h5>Frequence (min)</h5>
+                            </div>
+                            <div class="col">
+                                <h5>Next Arraval</h5>
+                            </div>
+                            <div class="col">
+                                <h5>Minutes Away</h5>
+                            </div>
+                        </div>
+                        <hr class="m-2">
+                        <div id="set-train-info" class="row">
+                            <!-- Trains Info will be added here -->
+                        </div>
+                    </div>
+                </div><!-- end of card with trains info -->
+            </div>
+        </div>
+        <!-- ----------------------------------------- -->
+        <!-- ----------- Add Train Schedule ---------- -->
+        <!-- ----------------------------------------- -->
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <!-- card -->
+                <div class="card border rounded border-primary">
+                    <div class="card-header text-light bg-primary">
+                        <h3>Add Train</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row px-3">
+                            <label for="train-name">Train Name</label>
+                            <input type="text" name="" id="get-train-name" class="form-control" placeholder="" aria-describedby="helpId">
+                        </div>
+                        <div class="form-group row px-3">
+                            <label for="train-name">Destination</label>
+                            <input type="text" name="" id="get-destination" class="form-control" placeholder="" aria-describedby="helpId">
+                        </div>
+                        <div class="form-group row px-3">
+                            <label for="train-name">First Train Time (HH:mm Military Time)</label>
+                            <input type="text" name="" id="get-train-time" class="form-control" placeholder="" aria-describedby="helpId">
+                        </div>
+                        <div class="form-group row px-3">
+                            <label for="train-name">Frequency (minutes)</label>
+                            <input type="text" name="" id="get-frequency" class="form-control" placeholder="" aria-describedby="helpId">
+                        </div>
+                        <button id="btn-submit" class="btn btn-primary ml-0 px-5" type="submit">Submit</button>
+                    </div><!-- end of card body -->
+                </div><!-- end of card with forms -->
+            </div><!-- end of col -->
+        </div><!-- end of row -->
+
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <!-- Application Javascript -->
+        <script src="./assets/javascript/application.js"></script>
+</body>
+
+</html>
