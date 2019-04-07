@@ -34,14 +34,11 @@ let inputElements = {
 
 
 function onSubmitClick() {
-
     // get get-train-name
     trainInfo.name = inputElements.name.value;
     // get get-destination
     trainInfo.destination = inputElements.destination.value;
 
-    // get get-frequncy
-    //trainInfo.fequency = inputElements.fequency.value;
     // clean the inputs
     for (let _key in inputElements) {
         inputElements[_key].value = "";
