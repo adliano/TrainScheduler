@@ -125,7 +125,8 @@ $(document).ready(function () {
         afterDone: onFrequencySet,
     });
     // Call Minute picker when input have the focus
-    $('#get-frequency').focusin(function () {
+    // $('#get-frequency').focusin(function () {
+    minutePicker.focusin(function () {
         minutePicker.clockpicker('show')
             .clockpicker('toggleView', 'minutes');
     });
