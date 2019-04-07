@@ -41,6 +41,20 @@
                         <h3>Current Train Schedule</h3>
                     </div>
                     <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Train Name</th>
+                                    <th>Destination</th>
+                                    <th>Frequency (min)</th>
+                                    <th>Next Arrivals</th>
+                                    <th>Minutes Away</th>
+                                </tr>
+                            </thead>
+                            <tbody id="set-train-info">
+                                <!-- Data will be load from firebase -->
+                            </tbody>
+                        </table>
                         <!--<div class="row">-->
                             <!--<div class="col">-->
                                 <!--<h5>Train Name</h5>-->
@@ -61,7 +75,7 @@
                         <!--<hr class="m-2">-->
                         <!--<div id="set-train-info" class="row">-->
                             <!-- Trains Info will be added here -->
-                        </div>
+                        <!-- </div> -->
                     </div>
                 </div><!-- end of card with trains info -->
             </div>

@@ -1,6 +1,7 @@
 // https://github.com/weareoutman/clockpicker
 // file:///Users/adliano/Downloads/clockpicker-gh-pages/index.html
 
+// TODO: create setInterval toUpdate times each minute
 
 
 /********* Global Variables ********/
@@ -17,6 +18,9 @@ let trainInfo = {
     // get get-frequency
     frequency: "",
 };
+
+console.log(`%c trainInfo keys : [${Object.keys(trainInfo)}]`, `background-color:blue; color:white;`);
+
 
 let inputElements = {
     name: document.querySelector("#get-train-name"),
@@ -43,19 +47,42 @@ let database = firebase.database();
 
 // ------ get user data using JSON -------
 
-function isDataMissing(){
+function isDataMissing() {
     // Loop through each key in JSON
-    for(let _key in trainInfo){
+    for (let _key in trainInfo) {
         // get the value for the current key
         let _data = trainInfo[_key];
         // check if data is available
-        if(_data.length < 1){
+        if (_data.length < 1) {
             // if no data return true
             return true;
         }
     }
     // if all data is populated return false
     return false;
+}
+
+function mkTableRow(firebaseObj) {
+    // Get Parrent table body (Parent)
+    let _tableBody = document.querySelector("#set-train-info");
+    // Create the table row element
+    let _tableRow = document.createElement("tr");
+    for(let _key in trainInfo){
+        console.log(`%c trainInfo key : ${_key}`, `background-color:green; color:white;`);
+        let _tableData = document.createElement("td");
+        _tableData.textContent = firebaseObj[_key];
+        _tableRow.appendChild(_tableData);
+    }
+    _tableBody.appendChild(_tableRow);
+    /**
+    <tr>
+        <td>a</td>
+        <td>a</td>
+        <td>a</td>
+        <td>a</td>
+        <td>a</td>
+    </tr>
+     */
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -67,7 +94,7 @@ function onSubmitClick() {
     // get get-destination
     trainInfo.destination = inputElements.destination.value;
     // Check if all required fields are populated
-    if (!isDataMissing()){
+    if (!isDataMissing()) {
         // Push data to firebase
         database.ref().push(trainInfo);
         // clean the inputs
@@ -102,6 +129,17 @@ function onFrequencySet() {
     inputElements.frequency.value = inputElements.frequency.value.split(':')[1];
     trainInfo.frequency = parseInt(inputElements.frequency.value);
 }
+
+
+database.ref().on('child_added', function(snapshot){
+    let dataObj = snapshot.val();
+    mkTableRow(dataObj);
+
+});
+
+
+
+
 
 /*****************************************************/
 /******************* Timepicker **********************/
