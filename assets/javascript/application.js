@@ -27,15 +27,7 @@ let inputElements = {
     time: document.querySelector("#get-train-time"),
     frequency: document.querySelector("#get-frequency"),
 }
-// Firebase configurations
-let config = {
-    apiKey: "AIzaSyDwsaSFbMU9Iy7mLVkEB_EMXh2O5PGoGf8",
-    authDomain: "demoprojectfb-d2812.firebaseapp.com",
-    databaseURL: "https://demoprojectfb-d2812.firebaseio.com",
-    projectId: "demoprojectfb-d2812",
-    storageBucket: "demoprojectfb-d2812.appspot.com",
-    messagingSenderId: "594142064753"
-};
+
 // Initialize Firebase
 firebase.initializeApp(config);
 // 
