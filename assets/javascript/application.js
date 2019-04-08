@@ -63,6 +63,7 @@ function getTimes(timeObj, frequency){
 /******************* mkTableRow() ********************/
 /*****************************************************/
 // get data from firebase and update info on set-train-info
+// TODO: FIX Problem with timemissing a minute
 function mkTableRow(firebaseObj) {
     // Get Parrent table body (Parent)
     let _tableBody = document.querySelector("#set-train-info");
@@ -92,7 +93,7 @@ function updateTimes() {
     _tableBody.innerHTML = "";
     // Get data from sessionStorage and update screen
     for (let i = 0; i < sessionStorage.length; i++) {
-        mkTableRow(JSON.parse(sessionStorage[i]));
+       mkTableRow(JSON.parse(sessionStorage[i]));
     }
 }
 /*****************************************************/
@@ -103,12 +104,13 @@ function updateClock() {
     // get element to update time
     let datetime = document.querySelector("#datetime");
     // get time now
-    let _now = moment(new Date());
+    //let _timeNow = moment(new Date());
+    let _timeNow = moment();
     // set current time on screen
-    datetime.textContent = _now.format('dddd, MMMM Do YYYY, HH:mm:ss');
+    datetime.textContent = _timeNow.format('dddd, MMMM Do YYYY, HH:mm:ss');
     // update train times every minute
-    if (_now.format('ss') == '00') {
-        updateTimes();
+    if (_timeNow.format('ss') == '00') {
+       updateTimes();
     }
 };
 //
@@ -158,7 +160,6 @@ function onFrequencySet() {
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~ child_added ~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
 database.ref().on('child_added', function (snapshot) {
     dbDataSnapshot = snapshot.val();
     sessionStorage.setItem(sessionStorageKey++, JSON.stringify(dbDataSnapshot));
