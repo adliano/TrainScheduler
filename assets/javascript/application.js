@@ -1,33 +1,23 @@
 // https://github.com/weareoutman/clockpicker
 // file:///Users/adliano/Downloads/clockpicker-gh-pages/index.html
 
-//console.log(`%c trainInfo keys : [${Object.keys(trainInfo)}]`, `background-color:blue; color:white;`);
-
-
-// TODO: create setfrequency toUpdate times each minute
-
 /********* Global Variables ********/
+// Database Data Snapshot
+let dbDataSnapshot;
+// Key used to store data at sessionStorageKey
+let sessionStorageKey = 0;
+// JSON to hold data that will be sent to Firebase
 let trainInfo = {
-    // get get-train-name
-    name: "",
-    // get get-destination
-    destination: "",
     // get get-train-time
-    time: {
-        hour: 0,
-        minute: 0,
-    },
-    // get get-frequency
-    frequency: 0,
+    time: {},
 };
-// JSON with inputs elements 
+// JSON with text inputs elements 
 let inputElements = {
     name: document.querySelector("#get-train-name"),
     destination: document.querySelector("#get-destination"),
     time: document.querySelector("#get-train-time"),
     frequency: document.querySelector("#get-frequency"),
 }
-
 // Initialize Firebase
 firebase.initializeApp(config);
 // 
@@ -36,6 +26,7 @@ let database = firebase.database();
 /*****************************************************/
 /***************** isDataMissing() *******************/
 /*****************************************************/
+// Function to check if any field its missing
 function isDataMissing() {
     // Loop through each key in JSON
     for (let _key in trainInfo) {
@@ -51,36 +42,23 @@ function isDataMissing() {
     return false;
 }
 /*****************************************************/
-/********************* setTimes() ********************/
+/********************* getTimes() ********************/
 /*****************************************************/
-function setTimes(timeObj, frequency){
+// Function to get train time arrivel and minutes away
+function getTimes(timeObj, frequency){
     // get moment time of first train
     let _firstTrainTime = moment(timeObj);
     // get current time
     let _now = moment();
     // get difference time in minutes
     let _diff = _now.diff(_firstTrainTime, 'minutes');
-
+    // get how minutes away its next train
     let _minutesAway = frequency - ( _diff % frequency );
-
+    // get next train hour in 24h format
     let _nextTrain = moment().add(_minutesAway, 'minutes').format('HH:mm');
-
-
-    console.log(timeObj);
-    console.log(`_firstTrainTime : ${_firstTrainTime}`);
-
-    console.log(`_diff : ${_diff}`);
-    
-    console.log(`_minutesAway : ${_minutesAway}`);
-    
-    console.log(`next train : ${_nextTrain} in : ${_minutesAway} minutes`);
-
-    return {minutesAway:_minutesAway,nextTrain:_nextTrain};
+    // retutrn object with 
+    return { nextTrain: _nextTrain,minutesAway: _minutesAway};
 }
-
-
-
-
 /*****************************************************/
 /******************* mkTableRow() ********************/
 /*****************************************************/
@@ -90,96 +68,56 @@ function mkTableRow(firebaseObj) {
     let _tableBody = document.querySelector("#set-train-info");
     // Create the table row element
     let _tableRow = document.createElement("tr");
-    // Using loop to create echa td (table data) elemet, we will use the trainInfo key as referenc
-    // to make sure that data will be load on right order
-    // Firebase change the order of the keys to Aphsbetic order
-
-    let timesObj = setTimes(firebaseObj.time, firebaseObj.frequency);
-
-
-
-    let tdName = document.createElement("td");
-    tdName.textContent = firebaseObj.name;
-    _tableRow.appendChild(tdName);
-
-    let tdDestination = document.createElement("td");
-    tdDestination.textContent = firebaseObj.destination;
-    _tableRow.appendChild(tdDestination);
-
-    let tdFrequency = document.createElement("td");
-    tdFrequency.textContent = firebaseObj.frequency;
-    _tableRow.appendChild(tdFrequency);
-
-    let tdNextTrain = document.createElement("td");
-    tdNextTrain.textContent = timesObj.nextTrain;
-    _tableRow.appendChild(tdNextTrain);
-
-    let tdMinutesAway = document.createElement("td");
-    tdMinutesAway.textContent = timesObj.minutesAway;
-    _tableRow.appendChild(tdMinutesAway);
-
-
-
-
+    // get next train time and minutes away
+    let timesObj = getTimes(firebaseObj.time, firebaseObj.frequency);
+    // create a array withh all data
+    let dataCollection = [firebaseObj.name, firebaseObj.destination, firebaseObj.frequency, timesObj.nextTrain, timesObj.minutesAway];
+    // loop through data and add to table row
+    for(let _data of dataCollection){
+        let tableData = document.createElement("td");
+        tableData.textContent = _data;
+        _tableRow.appendChild(tableData);
+    }
+    // add row to table body
     _tableBody.appendChild(_tableRow);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // for (let _key in trainInfo) {
-    //     let _tableData = document.createElement("td");
-    //     if (_key !== 'time') {
-
-    //         console.log(firebaseObj[_key]);
-            
-    //         _tableData.textContent = firebaseObj[_key];
-    //         _tableRow.appendChild(_tableData);
-    //     }
-    //     else{
-    //         // set times
-    //         setTimes(firebaseObj.time,firebaseObj.frequency);
-    //         // get moment time of first train
-    //         let _firstTrainTime = moment(firebaseObj.time);
-    //         // get current time
-    //         let _now = moment();
-    //         // get difference time in minutes
-    //         let _diff = _now.diff(_firstTrainTime, 'minutes');
-
-    //         let _minutesAway = firebaseObj.frequency - (_diff % firebaseObj.frequency);
-
-    //         let _nextTrain = moment().add(_minutesAway, 'minutes').format('HH:mm');
-
-    //         _tableData.textContent = _nextTrain;
-    //         _tableRow.appendChild(_tableData);
-
-    //        // _tableData.textContent = _minutesAway;
-    //        // _tableRow.appendChild(_tableData);
-    //     }
-    // }
-    // _tableBody.appendChild(_tableRow);
 }
+/*****************************************************/
+/******************* updateTimes() *******************/
+/*****************************************************/
+// Function used to update screnn avery minute
+function updateTimes() {
+    // Get Parrent element
+    let _tableBody = document.querySelector("#set-train-info");
+    // Clean children from parent
+    _tableBody.innerHTML = "";
+    // Get data from sessionStorage and update screen
+    for (let i = 0; i < sessionStorage.length; i++) {
+        mkTableRow(JSON.parse(sessionStorage[i]));
+    }
+}
+/*****************************************************/
+/******************* updateClock() *******************/
+/*****************************************************/
+// function used to update clock on screnn
+function updateClock() {
+    // get element to update time
+    let datetime = document.querySelector("#datetime");
+    // get time now
+    let _now = moment(new Date());
+    // set current time on screen
+    datetime.textContent = _now.format('dddd, MMMM Do YYYY, HH:mm:ss');
+    // update train times every minute
+    if (_now.format('ss') == '00') {
+        updateTimes();
+    }
+};
 //
 ///////////////////// Event Listeners /////////////////////////////
 //
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~ onSubmitClick() ~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+// callback used on submit button click
 function onSubmitClick() {
     // get get-train-name
     trainInfo.name = inputElements.name.value;
@@ -208,8 +146,7 @@ function onTimeEnter() {
     let _strTime = inputElements.time.value;
     trainInfo.time.hour = parseInt(_strTime.split(':')[0]);
     trainInfo.time.minute = parseInt(_strTime.split(':')[1]);
-
-    console.dir(trainInfo);
+    //console.dir(trainInfo);
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~ onFrequencySet() ~~~~~~~~~~~~~~~~~*/
@@ -221,13 +158,16 @@ function onFrequencySet() {
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~ child_added ~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
 database.ref().on('child_added', function (snapshot) {
-    let dataObj = snapshot.val();
-    mkTableRow(dataObj);
+    dbDataSnapshot = snapshot.val();
+    sessionStorage.setItem(sessionStorageKey++, JSON.stringify(dbDataSnapshot));
+    mkTableRow(dbDataSnapshot);
 });
 /*****************************************************/
 /******************* Timepicker **********************/
 /*****************************************************/
+// This lib uses JQuery
 $(document).ready(function () {
     $('#get-train-time').clockpicker({
         placement: 'top',
@@ -253,8 +193,10 @@ $(document).ready(function () {
             .clockpicker('toggleView', 'minutes');
     });
 });
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
+/* ======================================================= */
+setInterval(updateClock, 1000);
+
 inputElements.time.addEventListener(`input`, onTimeEnter);
 document.querySelector("#btn-submit").addEventListener("click", onSubmitClick);
+
+//EOF

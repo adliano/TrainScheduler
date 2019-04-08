@@ -8,9 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    
+    <!-- Time picker css -->
     <link rel="stylesheet" href="./assets/css/bootstrap-clockpicker.min.css">
-
     <!-- Application CSS -->
     <link rel="stylesheet" href="./assets/css/style.css">
     <!-- Google Fonts -->
@@ -19,7 +18,6 @@
     <script src="https://www.gstatic.com/firebasejs/5.9.3/firebase.js"></script>
     <!-- Momentjs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-
 </head>
 
 <body>
@@ -31,6 +29,8 @@
             <div class="container text-center">
                 <h1 class="display-3">Train Scheduler</h1>
                 <p class="lead">A Better way to don't miss the train</p>
+                <!-- Clock -->
+                <h5 id="datetime"></h5>
             </div>
         </div>
         <!-- ----------------------------------------- -->
@@ -57,30 +57,9 @@
                                 <!-- Data will be load from firebase -->
                             </tbody>
                         </table>
-                        <!--<div class="row">-->
-                            <!--<div class="col">-->
-                                <!--<h5>Train Name</h5>-->
-                            <!--</div>-->
-                            <!--<div class="col">-->
-                                <!--<h5>Destination</h5>-->
-                            <!--</div>-->
-                            <!--<div class="col">-->
-                                <!--<h5>Frequency (min)</h5>-->
-                            <!--</div>-->
-                            <!--<div class="col">-->
-                                <!--<h5>Next Arrivals</h5>-->
-                            <!--</div>-->
-                            <!--<div class="col">-->
-                                <!--<h5>Minutes Away</h5>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<hr class="m-2">-->
-                        <!--<div id="set-train-info" class="row">-->
-                            <!-- Trains Info will be added here -->
-                        <!-- </div> -->
-                    </div>
+                    </div><!-- end card body -->
                 </div><!-- end of card with trains info -->
-            </div>
+            </div><!-- end of col -->
         </div>
         <!-- ----------------------------------------- -->
         <!-- ----------- Add Train Schedule ---------- -->
