@@ -46,24 +46,39 @@ function isDataMissing() {
 /*****************************************************/
 // Function to get train time arrivel and minutes away
 function getTimes(timeObj, frequency){
+    // variable to hold net train time
+    let _nextTrain;
+    // variable to hold minutes away for next train
+    let _minutesAway;
     // get moment time of first train
     let _firstTrainTime = moment(timeObj);
     // get current time
-    let _now = moment();
+    let _now = moment(); 
     // get difference time in minutes
-    let _diff = _now.diff(_firstTrainTime, 'minutes');
-    // get how minutes away its next train
-    let _minutesAway = frequency - ( _diff % frequency );
-    // get next train hour in 24h format
-    let _nextTrain = moment().add(_minutesAway, 'minutes').format('HH:mm');
-    // retutrn object with 
+    let _diff = Math.abs(_now.diff(_firstTrainTime, 'minutes'));
+    // Check if First train is in future time
+    if (_now.isBefore(_firstTrainTime)){ 
+        // if yes show first time of the day train
+        _nextTrain = _firstTrainTime.format(`HH:mm`);
+        // and how many minutes away from current time
+        _minutesAway = _diff;
+    }
+    // else (train first time is pass)
+    else{
+        // get how minutes away its next train by using 
+        // mod will give the reminder between current time and frequency
+        // so we have frequency minus time alredy pass from last train.
+        _minutesAway = frequency - (_diff % frequency);
+        // get next train hour in 24h format
+        _nextTrain = _now.add(_minutesAway, 'minutes').format('HH:mm');
+    }
+    // retutrn object with train times info
     return { nextTrain: _nextTrain,minutesAway: _minutesAway};
 }
 /*****************************************************/
 /******************* mkTableRow() ********************/
 /*****************************************************/
 // get data from firebase and update info on set-train-info
-// TODO: FIX Problem with timemissing a minute
 function mkTableRow(firebaseObj) {
     // Get Parrent table body (Parent)
     let _tableBody = document.querySelector("#set-train-info");
