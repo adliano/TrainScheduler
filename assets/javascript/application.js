@@ -214,5 +214,3 @@ setInterval(updateClock, 1000);
 
 inputElements.time.addEventListener(`input`, onTimeEnter);
 document.querySelector("#btn-submit").addEventListener("click", onSubmitClick);
-
-//EOF
