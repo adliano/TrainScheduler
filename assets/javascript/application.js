@@ -7,9 +7,19 @@ let dbDataSnapshot;
 // Key used to store data at sessionStorageKey
 let sessionStorageKey = 0;
 // JSON to hold data that will be sent to Firebase
-let trainInfo = {
-    // get get-train-time
-    time: {},
+let data = {
+    train: {
+        // name : get-train-name,
+        // destination : get-destination
+    },
+    time: {
+        // get get-train-times,
+        firstTime : {
+            // hour : hour,
+            // minute : minute ,
+        },
+        // frequency : get-frequency
+    },
 };
 // JSON with text inputs elements 
 let inputElements = {
@@ -29,9 +39,9 @@ let database = firebase.database();
 // Function to check if any field its missing
 function isDataMissing() {
     // Loop through each key in JSON
-    for (let _key in trainInfo) {
+    for (let _key in data) {
         // get the value for the current key
-        let _data = trainInfo[_key];
+        let _data = data[_key];
         // check if data is available
         if (_data.length < 1) {
             // if no data return true
@@ -45,53 +55,62 @@ function isDataMissing() {
 /********************* getTimes() ********************/
 /*****************************************************/
 // Function to get train time arrivel and minutes away
-function getTimes(timeObj, frequency){
+function getTimes(timeObj) {
     // variable to hold net train time
     let _nextTrain;
     // variable to hold minutes away for next train
     let _minutesAway;
     // get moment time of first train
-    let _firstTrainTime = moment(timeObj);
+    let _firstTrainTime = moment(timeObj.firstTime);
     // get current time
-    let _now = moment(); 
+    let _now = moment();
     // get difference time in minutes
     let _diff = Math.abs(_now.diff(_firstTrainTime, 'minutes'));
     // Check if First train is in future time
-    if (_now.isBefore(_firstTrainTime)){ 
+    if (_now.isBefore(_firstTrainTime)) {
         // if yes show first time of the day train
         _nextTrain = _firstTrainTime.format(`HH:mm`);
         // and how many minutes away from current time
         _minutesAway = _diff;
     }
     // else (train first time is pass)
-    else{
+    else {
         // get how minutes away its next train by using 
         // mod will give the reminder between current time and frequency
         // so we have frequency minus time alredy pass from last train.
-        _minutesAway = frequency - (_diff % frequency);
+        _minutesAway = timeObj.frequency - (_diff % timeObj.frequency);
         // get next train hour in 24h format
         _nextTrain = _now.add(_minutesAway, 'minutes').format('HH:mm');
     }
     // retutrn object with train times info
-    return { nextTrain: _nextTrain,minutesAway: _minutesAway};
+    return {
+        frequency : timeObj.frequency,
+        hour : _nextTrain,
+        minutes : _minutesAway
+    };
 }
 /*****************************************************/
 /******************* mkTableRow() ********************/
 /*****************************************************/
 // get data from firebase and update info on set-train-info
 function mkTableRow(firebaseObj) {
+    // console.dir(firebaseObj);
     // Get Parrent table body (Parent)
     let _tableBody = document.querySelector("#set-train-info");
     // Create the table row element
     let _tableRow = document.createElement("tr");
     // get next train time and minutes away
-    let timesObj = getTimes(firebaseObj.time, firebaseObj.frequency);
-    // create a array withh all data
-    let dataCollection = [firebaseObj.name, firebaseObj.destination, firebaseObj.frequency, timesObj.nextTrain, timesObj.minutesAway];
+    let timesObj = getTimes(firebaseObj.time);
+    // combind json withh all data
+    // bject.assign() will append the 2 json in a single
+    let dataCollection = Object.assign(firebaseObj.train, timesObj);
     // loop through data and add to table row
-    for(let _data of dataCollection){
+    for (let _data in dataCollection) {
+        // create table data
         let tableData = document.createElement("td");
-        tableData.textContent = _data;
+        // add text to table data
+        tableData.textContent = dataCollection[_data];
+        // append table data to table row
         _tableRow.appendChild(tableData);
     }
     // add row to table body
@@ -108,7 +127,7 @@ function updateTimes() {
     _tableBody.innerHTML = "";
     // Get data from sessionStorage and update screen
     for (let i = 0; i < sessionStorage.length; i++) {
-       mkTableRow(JSON.parse(sessionStorage[i]));
+        mkTableRow(JSON.parse(sessionStorage[i]));
     }
 }
 /*****************************************************/
@@ -125,7 +144,7 @@ function updateClock() {
     datetime.textContent = _timeNow.format('dddd, MMMM Do YYYY, HH:mm:ss');
     // update train times every minute
     if (_timeNow.format('ss') == '00') {
-       updateTimes();
+        updateTimes();
     }
 };
 //
@@ -133,25 +152,27 @@ function updateClock() {
 //
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~ onSubmitClick() ~~~~~~~~~~~~~~~~~~*/
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ 
 // callback used on submit button click
+// Times will be handle by another event listener
 function onSubmitClick() {
     // get get-train-name
-    trainInfo.name = inputElements.name.value;
+    data.train.code = inputElements.name.value;
     // get get-destination
-    trainInfo.destination = inputElements.destination.value;
+    data.train.destination = inputElements.destination.value;
     // Check if all required fields are populated
     if (!isDataMissing()) {
         // Push data to firebase
-        database.ref().push(trainInfo);
-        // clean the inputs
+        // database.ref().push(trainInfo);
+        database.ref().push(data);
+        // clean the text inputs
         for (let _key in inputElements) {
             inputElements[_key].value = "";
         }
     }
     // if any missing data display error
     else {
-        // TODO display error if missing data
+        // TODO: display error if missing data
         alert("Missing data");
     }
 }
@@ -161,8 +182,8 @@ function onSubmitClick() {
 function onTimeEnter() {
     // get get-train-time
     let _strTime = inputElements.time.value;
-    trainInfo.time.hour = parseInt(_strTime.split(':')[0]);
-    trainInfo.time.minute = parseInt(_strTime.split(':')[1]);
+    data.time.firstTime.hour = parseInt(_strTime.split(':')[0]);
+    data.time.firstTime.minute = parseInt(_strTime.split(':')[1]);
     //console.dir(trainInfo);
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -170,7 +191,7 @@ function onTimeEnter() {
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 function onFrequencySet() {
     inputElements.frequency.value = inputElements.frequency.value.split(':')[1];
-    trainInfo.frequency = parseInt(inputElements.frequency.value);
+    data.time.frequency = parseInt(inputElements.frequency.value);
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~ child_added ~~~~~~~~~~~~~~~~~~~~~*/
