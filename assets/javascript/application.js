@@ -1,5 +1,5 @@
+// ----- Lib used ----
 // https://github.com/weareoutman/clockpicker
-// file:///Users/adliano/Downloads/clockpicker-gh-pages/index.html
 
 /********* Global Variables ********/
 // Database Data Snapshot
@@ -8,13 +8,15 @@ let dbDataSnapshot;
 let sessionStorageKey = 0;
 // JSON to hold data that will be sent to Firebase
 let data = {
+    // train key with name and destination
     train: {
         // name : get-train-name,
         // destination : get-destination
     },
+    // time key with time of first train and frequency
     time: {
         // get get-train-times,
-        firstTime : {
+        firstTime: {
             // hour : hour,
             // minute : minute ,
         },
@@ -82,11 +84,11 @@ function getTimes(timeObj) {
         // get next train hour in 24h format
         _nextTrain = _now.add(_minutesAway, 'minutes').format('HH:mm');
     }
-    // retutrn object with train times info
+    // retutrn object with train times info frequency, hour of next train and minutes away
     return {
-        frequency : timeObj.frequency,
-        hour : _nextTrain,
-        minutes : _minutesAway
+        frequency: timeObj.frequency,
+        hour: _nextTrain,
+        minutes: _minutesAway
     };
 }
 /*****************************************************/
@@ -119,7 +121,8 @@ function mkTableRow(firebaseObj) {
 /*****************************************************/
 /******************* updateTimes() *******************/
 /*****************************************************/
-// Function used to update screnn avery minute
+// Function used to update screen every minute
+// this will get data from sessionStorage to update screen
 function updateTimes() {
     // Get Parrent element
     let _tableBody = document.querySelector("#set-train-info");
@@ -152,7 +155,7 @@ function updateClock() {
 //
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~ onSubmitClick() ~~~~~~~~~~~~~~~~~~*/
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 // callback used on submit button click
 // Times will be handle by another event listener
 function onSubmitClick() {
@@ -165,8 +168,9 @@ function onSubmitClick() {
         // Push data to firebase
         // database.ref().push(trainInfo);
         database.ref().push(data);
-        // clean the text inputs
+        // loop trough elements text input and
         for (let _key in inputElements) {
+            // clean the text inputs
             inputElements[_key].value = "";
         }
     }
@@ -180,9 +184,11 @@ function onSubmitClick() {
 /*~~~~~~~~~~~~~~~~~~~ onTimeEnter() ~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 function onTimeEnter() {
-    // get get-train-time
+    // get get-train-time HH:mm
     let _strTime = inputElements.time.value;
+    // split will return array index [0] will be hour
     data.time.firstTime.hour = parseInt(_strTime.split(':')[0]);
+    // and index [1] will be minutes
     data.time.firstTime.minute = parseInt(_strTime.split(':')[1]);
     //console.dir(trainInfo);
 }
@@ -190,22 +196,32 @@ function onTimeEnter() {
 /*~~~~~~~~~~~~~~~~~~ onFrequencySet() ~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 function onFrequencySet() {
+    // this function will return only minutes, the string format from text input 
+    // is 00:mm so we will only get the mm
     inputElements.frequency.value = inputElements.frequency.value.split(':')[1];
     data.time.frequency = parseInt(inputElements.frequency.value);
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~ child_added ~~~~~~~~~~~~~~~~~~~~~*/
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+// event listener called everytime an child is added to firebase
 database.ref().on('child_added', function (snapshot) {
+    // get the value from database's snapshot
     dbDataSnapshot = snapshot.val();
+    // set new data to sessionStorageKey using sessionStorageKey and update the key
     sessionStorage.setItem(sessionStorageKey++, JSON.stringify(dbDataSnapshot));
+    // add the new data to table on display
     mkTableRow(dbDataSnapshot);
 });
 /*****************************************************/
 /******************* Timepicker **********************/
 /*****************************************************/
-// This lib uses JQuery
+// This lib uses JQuery used to set times like hours of 
+// first train and minutes frequency
 $(document).ready(function () {
+    // selector get-train-time and add clockpicker to it
+    // clockpicker will accept a json obj with configurations 
+    // as argument 
     $('#get-train-time').clockpicker({
         placement: 'top',
         align: 'left',
@@ -223,13 +239,14 @@ $(document).ready(function () {
         // callback function triggered after time is written to input
         afterDone: onFrequencySet,
     });
-    // Call Minute picker when input have the focus
-    // $('#get-frequency').focusin(function () {
+    // Call Minute picker when text input have the focus
     minutePicker.focusin(function () {
         minutePicker.clockpicker('show')
             .clockpicker('toggleView', 'minutes');
     });
 });
+
+
 /* ======================================================= */
 setInterval(updateClock, 1000);
 
